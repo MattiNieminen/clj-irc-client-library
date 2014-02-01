@@ -4,7 +4,6 @@
 
 (defn write
   "Writes message to connection output and flushes."
-  {name :name [hole1 hole2] :scores}
   [connection message]
   (doto (:out @connection)
     (.println (str message "\r"))
