@@ -20,7 +20,7 @@
          (re-find #"^ERROR :Closing Link:" new-message)
          (dosync (alter connection merge {:exit true}))
          (re-find #"^PING" new-message)
-         (write connection "PONG " (re-find #":.*" new-message))))))
+         (write connection (str "PONG " (re-find #":.*" new-message)))))))
 
 (defn connect
   "Connects to IRC server and returns the connection."
