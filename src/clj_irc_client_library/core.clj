@@ -3,7 +3,7 @@
            (java.io PrintWriter InputStreamReader BufferedReader)))
 
 (defn write
-  "Writes message to connection output and flushes."
+  "Writes messages to the connection output and flushes."
   [connection message]
   (doto (:out @connection)
     (.println (str message "\r"))
@@ -11,7 +11,7 @@
 
 (defn handle-connection
   "Handles irc connection created by connect. Takes care of PING PONG and
-  writes incoming messages to ref in connection"
+  prints incoming messages."
   [connection]
   (while (nil? (:exit @connection))
     (let [new-message (.readLine (:in @connection))]
@@ -23,7 +23,7 @@
          (write connection "PONG " (re-find #":.*" new-message))))))
 
 (defn connect
-  "Connects to IRC server and returns a connection"
+  "Connects to IRC server and returns the connection."
   [hostname port]
   (let [socket (Socket. hostname port)
         connection (ref {:in (BufferedReader. (InputStreamReader.
