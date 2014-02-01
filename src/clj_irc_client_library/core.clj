@@ -53,3 +53,9 @@
   "Sends message to a user or channel (PRIVMSG)."
   [connection target message]
   (write connection (str "PRIVMSG " target " :" message)))
+
+(defn disconnect
+  "Closes the connection to server."
+  [connection message]
+  (write connection (str "QUIT :" message))
+  (dosync (alter connection merge {:exit true})))
