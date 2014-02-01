@@ -52,4 +52,4 @@
 (defn speak
   "Sends message to a user or channel (PRIVMSG)."
   [connection target message]
-  (write connection (str "PRIVMSG " target " " message)))
+  (write connection (str "PRIVMSG " target " :" message)))
