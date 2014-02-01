@@ -2,6 +2,13 @@
   (:import (java.net Socket)
            (java.io PrintWriter InputStreamReader BufferedReader)))
 
+(defn write
+  "Writes message to connection output and flushes."
+  [connection message]
+  (doto (:out @connection)
+    (.println (str message "\r"))
+    (.flush)))
+
 (defn handle-connection
   "Handles irc connection created by connect. Takes care of PING PONG and
   writes incoming messages to ref in connection"
@@ -26,16 +33,21 @@
     (future (handle-connection connection))
     connection))
 
-(defn write
-  "Writes message to connection output and flushes."
-  [connection message]
-  (doto (:out @connection)
-    (.println (str message "\r"))
-    (.flush)))
-
 ;TODO should there be just one form with do to clearly indicate side effects?
 (defn login
   "Sends necessary login messages to IRC server."
   [connection nick user mode real-name]
   (write connection (str "NICK " nick))
   (write connection (str "USER " user " " mode " * :" real-name)))
+
+(defn join
+  "Joins to channel."
+  [connection channel]
+  (cond
+    (re-find #"^#" channel)
+    (write connection (str "JOIN " channel))
+    :else
+    (write connection (str "JOIN #" channel))))
+  
+  
+  
