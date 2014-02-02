@@ -49,6 +49,15 @@
     :else
     (write connection (str "JOIN #" channel))))
 
+(defn part
+  "Leaves a channel."
+  [connection channel]
+  (cond
+    (re-find #"^#" channel)
+    (write connection (str "PART " channel))
+    :else
+    (write connection (str "PART #" channel))))
+
 (defn speak
   "Sends message to a user or channel (PRIVMSG)."
   [connection target message]
