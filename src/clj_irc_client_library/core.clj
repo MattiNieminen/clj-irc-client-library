@@ -41,7 +41,7 @@
   (write connection (str "USER " user " " mode " * :" real-name)))
 
 (defn join
-  "Joins to channel."
+  "Joins to a channel."
   [connection channel]
   (cond
     (re-find #"^#" channel)
