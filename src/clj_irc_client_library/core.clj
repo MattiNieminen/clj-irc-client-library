@@ -1,6 +1,19 @@
 (ns clj-irc-client-library.core
   (:import (java.net Socket)
-           (java.io PrintWriter InputStreamReader BufferedReader)))
+           (java.io PrintWriter InputStreamReader BufferedReader))
+  (:use [clojure.string :only [split]]))
+
+(defn create-channel
+  "Creates a new channel."
+  []
+  {:names #{}
+   :messages ()})
+
+(defn merge-channel-to-connection
+  "Testing"
+  [connection name channel]
+  (dosync (alter connection #(merge-with merge %1 %2)
+                 {:channels {(keyword name) channel}})))
 
 (defn write
   "Writes messages to the connection output and flushes."
@@ -14,13 +27,18 @@
   prints incoming messages."
   [connection]
   (while (nil? (:exit @connection))
-    (let [new-message (.readLine (:in @connection))]
+    (let [new-message (.readLine (:in @connection))
+          message-words (split new-message  #"\s+")
+          numeric-reply (second message-words)]
       (println new-message)
       (cond
          (re-find #"^ERROR :Closing Link:" new-message)
          (dosync (alter connection merge {:exit true}))
          (re-find #"^PING" new-message)
-         (write connection (str "PONG " (re-find #":.*" new-message)))))))
+         (write connection (str "PONG " (re-find #":.*" new-message)))
+         (re-find #"^004" numeric-reply)
+         (merge-channel-to-connection connection (nth message-words 3)
+                                      (create-channel))))))
 
 (defn connect
   "Connects to IRC server and returns the connection."
@@ -29,6 +47,7 @@
         connection (ref {:in (BufferedReader. (InputStreamReader.
                                                 (.getInputStream socket)))
                          :out (PrintWriter. (.getOutputStream socket))
+                         :channels {}
                          :exit nil})]
     (future (handle-connection connection))
     connection))
@@ -68,3 +87,4 @@
   [connection message]
   (write connection (str "QUIT :" message))
   (dosync (alter connection merge {:exit true})))
+
