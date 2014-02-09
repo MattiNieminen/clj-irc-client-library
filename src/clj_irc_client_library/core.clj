@@ -38,6 +38,9 @@
          (write connection (str "PONG " (re-find #":.*" new-message)))
          (re-find #"^004" numeric-reply)
          (merge-channel-to-connection connection (nth message-words 3)
+                                      (create-channel))
+         (re-find #"JOIN" (second message-words))
+         (merge-channel-to-connection connection (nth message-words 2)
                                       (create-channel))))))
 
 (defn connect
