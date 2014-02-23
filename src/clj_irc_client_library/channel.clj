@@ -7,7 +7,7 @@
    :messages ()})
 
 (defn merge-channel-to-connection
-  "Testing"
+  "Merges new or existing channel to a connection"
   [connection name channel]
   (dosync (alter connection #(merge-with merge %1 %2)
                  {:channels {(keyword name) channel}})))
