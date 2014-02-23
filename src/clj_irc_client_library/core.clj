@@ -1,45 +1,8 @@
 (ns clj-irc-client-library.core
+  (:use clj-irc-client-library.channel
+        clj-irc-client-library.utils)
   (:import (java.net Socket)
-           (java.io PrintWriter InputStreamReader BufferedReader))
-  (:use [clojure.string :only [split trim]]))
-
-(defn words
-  "Splits string by whitespace"
-  [words]
-  (split words #"\s+"))
-
-(defn create-channel
-  "Creates a new channel."
-  []
-  {:names #{}
-   :messages ()})
-
-(defn merge-channel-to-connection
-  "Testing"
-  [connection name channel]
-  (dosync (alter connection #(merge-with merge %1 %2)
-                 {:channels {(keyword name) channel}})))
-
-(defn add-names-to-channel
-  "Adds list of names /nicks to a channel"
-  [channel names]
-  (let [new-names (set (clojure.set/union (:names channel) names))]
-  (merge channel {:names new-names})))
-
-(defn get-channel-name-from-names-reply
-  "Gets channel name from reply message"
-  [message]
-  (trim (subs (re-find #"[@|=] #.[^\s]*" message) 1)))
-
-(defn get-names-from-names-reply
-  "Gets names as list from reply message"
-  [message]
-  (words (subs (re-find #" :.*" message) 2)))
-
-(defn get-channel-from-connection
-  "Gets channel from connection"
-  [connection channel]
-  (get (:channels connection) (keyword channel)))
+           (java.io PrintWriter InputStreamReader BufferedReader)))
 
 (defn write
   "Writes messages to the connection output and flushes."
