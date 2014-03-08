@@ -15,3 +15,18 @@
   "Gets names as list from reply message"
   [message]
   (words (subs (re-find #" :.*" message) 2)))
+
+(defn get-channel-name-from-privmsg
+  "Gets channel name from privmsg"
+  [message]
+  (nth (words message) 2))
+
+(defn get-name-from-privmsg
+  "Gets name / nick from privmsg"
+  [message]
+  (subs (re-find #":.[^!]*" message) 1))
+
+(defn get-message-from-privmsg
+  "Gets message from privmsg"
+  [message]
+  (last (split message #":")))

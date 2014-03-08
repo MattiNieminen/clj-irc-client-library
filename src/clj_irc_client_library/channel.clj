@@ -4,7 +4,13 @@
   "Creates a new channel."
   []
   {:names #{}
-   :messages ()})
+   :messages []})
+
+(defn create-message
+  "Creates a new message."
+  [name message]
+  {:name name
+   :message message})
 
 (defn merge-channel-to-connection
   "Merges new or existing channel to a connection"
@@ -17,6 +23,12 @@
   [channel names]
   (let [new-names (set (clojure.set/union (:names channel) names))]
   (merge channel {:names new-names})))
+
+(defn add-message-to-channel
+  "Adds message to a channel"
+  [channel message]
+  (let [new-messages (conj (:messages channel) message)]
+  (merge channel {:messages new-messages})))
 
 (defn get-channel-from-connection
   "Gets channel from connection"

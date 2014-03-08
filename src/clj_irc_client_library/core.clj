@@ -37,7 +37,15 @@
            (add-names-to-channel
              (get-channel-from-connection
                @connection (get-channel-name-from-names-reply new-message))
-             (get-names-from-names-reply new-message)))))))
+             (get-names-from-names-reply new-message)))
+         (re-find #"PRIVMSG" reply-code)
+         (merge-channel-to-connection
+           connection (get-channel-name-from-privmsg new-message)
+           (add-message-to-channel
+             (get-channel-from-connection
+               @connection (get-channel-name-from-privmsg new-message))
+             (create-message (get-name-from-privmsg new-message)
+                             (get-message-from-privmsg new-message))))))))
 
 (defn connect
   "Connects to IRC server and returns the connection."
