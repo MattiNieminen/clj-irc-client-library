@@ -14,11 +14,12 @@
 (defn handle-connection
   "Handles irc connection created by connect. Takes care of PING PONG and
   prints incoming messages."
-  [connection]
+  [connection logging-fn]
   (while (nil? (:exit @connection))
     (let [new-message (.readLine (:in @connection))
           message-words (words new-message)
           reply-code (second message-words)]
+      (logging-fn new-message)
       (cond
          (re-find #"^ERROR :Closing Link:" new-message)
          (dosync (alter connection merge {:exit true}))
@@ -48,14 +49,14 @@
 
 (defn connect
   "Connects to IRC server and returns the connection."
-  [hostname port]
+  [hostname port logging-fn]
   (let [socket (Socket. hostname port)
         connection (ref {:in (BufferedReader. (InputStreamReader.
                                                 (.getInputStream socket)))
                          :out (PrintWriter. (.getOutputStream socket))
                          :channels {}
                          :exit nil})]
-    (future (handle-connection connection))
+    (future (handle-connection connection logging-fn))
     connection))
 
 ;TODO should there be just one form with do to clearly indicate side effects?
