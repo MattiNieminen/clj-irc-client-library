@@ -19,7 +19,6 @@
     (let [new-message (.readLine (:in @connection))
           message-words (words new-message)
           reply-code (second message-words)]
-      (println new-message)
       (cond
          (re-find #"^ERROR :Closing Link:" new-message)
          (dosync (alter connection merge {:exit true}))
