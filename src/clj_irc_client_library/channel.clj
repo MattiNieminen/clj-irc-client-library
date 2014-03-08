@@ -36,6 +36,11 @@
   (get (:channels connection) (keyword channel)))
 
 (defn get-messages-from-channel
-  "Gets channel from connection"
+  "Gets channel from a connection"
   [channel]
   (:messages channel))
+
+(defn get-messages-from-connection
+  "Gets messages from a channel in connection"
+  [connection channel]
+  (get-messages-from-channel (get-channel-from-connection connection channel)))
